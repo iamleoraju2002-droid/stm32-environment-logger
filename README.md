@@ -72,16 +72,16 @@ Project Status
 Current Version: v1.0
 
 Implemented:
-✓ BMP280 Driver
-✓ SSD1306 Driver
-✓ EEPROM Driver
-✓ Timer Interrupt Logging
-✓ Environment Data Logging
+ BMP280 Driver
+ SSD1306 Driver
+ EEPROM Driver
+ Timer Interrupt Logging
+ Environment Data Logging
 
 In Progress:
-□ UART Command Parser
-□ Log Retrieval Commands
-□ Circular Buffer Management
+ UART Command Parser
+ Log Retrieval Commands
+ Circular Buffer Management
 
 ## Demo
 
