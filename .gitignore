@@ -1,0 +1,18 @@
+# Build folders
+Debug/
+Release/
+
+# Build outputs
+*.o
+*.d
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+
+# Temporary files
+*.tmp
+
+# STM32CubeIDE generated
+RemoteSystemsTempFiles/
