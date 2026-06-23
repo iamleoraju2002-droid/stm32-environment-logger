@@ -67,6 +67,22 @@ An STM32-based environment logger that reads temperature and pressure from a BMP
 - EEPROM erase command
 - Circular buffer logging
 
+Project Status
+--------------
+Current Version: v1.0
+
+Implemented:
+✓ BMP280 Driver
+✓ SSD1306 Driver
+✓ EEPROM Driver
+✓ Timer Interrupt Logging
+✓ Environment Data Logging
+
+In Progress:
+□ UART Command Parser
+□ Log Retrieval Commands
+□ Circular Buffer Management
+
 ## Demo
 
 ### Hardware Setup
