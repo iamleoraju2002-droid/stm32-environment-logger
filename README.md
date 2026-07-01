@@ -150,15 +150,15 @@ Implemented
 
 ### Hardware Setup
 
-![Hardware Setup](images/hardware_setup.jpeg)
+![Hardware Setup](Images/hardware_setup.jpeg)
 
 ### OLED Output
 
-![OLED Display](images/oled_display.jpeg)
+![OLED Display](Images/oled_display.jpeg)
 
 ### UART Command Console
 
-![UART COMMAND TERMINAL](images/uart_command_terminal.jpeg)
+![UART COMMAND TERMINAL](Images/uart_command_terminal.jpeg)
 
 ## Author
 
