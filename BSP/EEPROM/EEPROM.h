@@ -9,7 +9,7 @@
 #define EEPROM_SIZE 32768
 
 void eeprom_wait_for_write(void);
-void eeprom_clear_all(void);
+uint8_t eeprom_clear_all(void);
 uint8_t eeprom_write_data(uint16_t mem_addr, uint8_t data);
 uint8_t eeprom_read_data(uint16_t mem_addr, uint8_t *data);
 uint8_t eeprom_write_buffer(uint16_t mem_addr, uint8_t *data, uint16_t len);

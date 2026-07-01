@@ -207,17 +207,17 @@ uint8_t eeprom_read_buffer(uint16_t mem_addr, uint8_t *buffer, uint16_t len)
 }
 
 
-void eeprom_clear_all(void)
+uint8_t eeprom_clear_all(void)
 {
 	uint8_t erase_page[64];
 	memset(erase_page, 0x00, 64);
 	for(uint16_t addr = 0; addr < EEPROM_SIZE; addr += 64)
 	{
-		eeprom_write_buffer(addr, erase_page, 64);
+		if(!(eeprom_write_buffer(addr, erase_page, 64)))
+			return 0;
 	}
+	return 1;
 }
-
-
 
 
 

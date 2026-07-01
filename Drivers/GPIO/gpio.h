@@ -11,4 +11,5 @@
 #include "stm32f4xx.h"
 
 void gpio_init(void);
+void usart2_gpio_init(void);
 #endif /* GPIO_GPIO_H_ */

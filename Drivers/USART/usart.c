@@ -1,8 +1,10 @@
 #include "usart.h"
 #include "ringbuffer.h"
+#include "gpio.h"
+#include "LOGGER.h"
 
 static ring_buffer_t usart2_rx_buffer;
-static void usart2_gpio_init(void);
+
 
 void usart2_init(void)
 {
@@ -13,62 +15,69 @@ void usart2_init(void)
 	ring_buffer_init(&usart2_rx_buffer);
 
 	USART2->BRR = 0x16D;
+	USART2->CR1 |= USART_CR1_RXNEIE;
+	NVIC_EnableIRQ(USART2_IRQn);
 	USART2->CR1 |= USART_CR1_TE;
+	USART2->CR1 |= USART_CR1_RE;
 	USART2->CR1 |= USART_CR1_UE;
 }
 
-static void usart2_gpio_init(void)
+
+
+uint8_t usart2_write_char (char c)
 {
-	GPIOA->MODER &= ~(3U << (2 * 2));
-	GPIOA->MODER |= (2U << (2 * 2));
-
-	GPIOA->MODER &= ~(3U << (2 * 3));
-	GPIOA->MODER |= (2U << (2 * 3));
-
-	GPIOA->AFR[0] &= ~(0xF << (2 * 4));
-	GPIOA->AFR[0]|= (7U << (2 * 4));
-
-	GPIOA->AFR[0] &= ~(0xF << (3 * 4));
-	GPIOA->AFR[0]|= (7U << (3 * 4));
-}
-
-void usart2_write_char (char c)
-{
-	while (!(USART2->SR & USART_SR_TXE));
+	uint32_t timeout = USART_TIMEOUT;
+	while (!(USART2->SR & USART_SR_TXE))
+	{
+		if(--timeout == 0)
+		{
+			return 0;
+		}
+	}
 	USART2->DR = c;
+	return 1;
 }
 
-void usart2_write_string(char *str)
+uint8_t usart2_write_string(char *str)
 {
 	while(*str)
 	{
-		usart2_write_char(*str++);
+		if(!(usart2_write_char(*str++)))
+			return 0;
 	}
+	return 1;
 }
 
-void usart2_write_hex(uint8_t value)
+uint8_t usart2_write_hex(uint8_t value)
 {
 	char hex_chars[] = "0123456789ABCDEF";
 
-	usart2_write_char('0');
-	usart2_write_char('x');
+	if(!(usart2_write_char('0')))
+		return 0;
+	if(!(usart2_write_char('x')))
+		return 0;
 
-	usart2_write_char(hex_chars[(value >> 4) & 0x0F]);
-	usart2_write_char(hex_chars[value & 0x0F]);
+	if(!(usart2_write_char(hex_chars[(value >> 4) & 0x0F])))
+		return 0;
+	if(!(usart2_write_char(hex_chars[value & 0x0F])))
+		return 0;
+	return 1;
 }
 
-void usart2_write_int(int32_t value)
+uint8_t usart2_write_int(int32_t value)
 {
 	char buffer[12];
 	int i = 0;
 	if (value == 0)
 	{
-		usart2_write_char('0');
-		return;
+		if(!(usart2_write_char('0')))
+			return 0;
+		return 1;
 	}
 	if (value < 0)
 	{
-		usart2_write_char('-');
+		if(!(usart2_write_char('-')))
+			return 0;
 		value = -value;
 	}
 	while(value > 0)
@@ -78,15 +87,26 @@ void usart2_write_int(int32_t value)
 	}
 	while(i>0)
 	{
-		usart2_write_char(buffer[--i]);
+		if(!(usart2_write_char(buffer[--i])))
+			return 0;
 	}
+	return 1;
 }
 
-void usart2_enable_rx_interrupt(void)
+uint8_t usart2_write_fixed_point(uint32_t value)
 {
-	USART2->CR1 |= USART_CR1_RE;
-	USART2->CR1 |= USART_CR1_RXNEIE;
-	NVIC_EnableIRQ(USART2_IRQn);
+	if(!(usart2_write_int(value / 100)))
+		return 0;
+	if(!(usart2_write_char('.')))
+		return 0;
+	if((value % 100) < 10)
+	{
+		if(!(usart2_write_char('0')))
+			return 0;
+	}
+	if(!(usart2_write_int(value % 100)))
+		return 0;
+	return 1;
 }
 
 void USART2_IRQHandler(void)
@@ -104,20 +124,23 @@ uint8_t usart2_data_available(void)
 	return ring_buffer_available(&usart2_rx_buffer);
 }
 
-char usart2_read_char(void)
+uint8_t usart2_read_char(char *c)
 {
 	uint8_t data;
-	while(!ring_buffer_get(&usart2_rx_buffer, &data));
-	return (char)data;
+	if(!(ring_buffer_get(&usart2_rx_buffer, &data)))
+		return 0;
+	*c = (char)data;
+	return 1;
 }
 
-void usart2_read_string(char *buffer, uint32_t max_len)
+uint8_t usart2_read_string(char *buffer, uint32_t max_len)
 {
 	uint32_t i = 0;
 	char c;
 	while(i < (max_len - 1))
 	{
-		c = usart2_read_char();
+		if(!(usart2_read_char(&c)))
+			return 0;
 		if(c == '\r' || c == '\n')
 		{
 			break;
@@ -125,13 +148,8 @@ void usart2_read_string(char *buffer, uint32_t max_len)
 		buffer[i++] = c;
 	}
 	buffer[i] = '\0';
+	return 1;
 }
-
-
-
-
-
-
 
 
 

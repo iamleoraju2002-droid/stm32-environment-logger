@@ -136,6 +136,25 @@ float bmp280_get_pressure(void)
 
 
 
+uint8_t bmp280_send_temp(int16_t *temp)
+{
+	if(!(usart2_write_fixed_point(*temp)))
+		return 0;
+	if(!(usart2_write_string("C\r\n")))
+		return 0;
+	return 1;
+}
+
+uint8_t bmp280_send_pressure(uint32_t *pressure)
+{
+	if(!(usart2_write_fixed_point(*pressure)))
+			return 0;
+	if(!(usart2_write_string("hPa\r\n")))
+		return 0;
+	return 1;
+}
+
+
 
 
 

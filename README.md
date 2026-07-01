@@ -1,6 +1,6 @@
 # STM32 Environment Logger
 
-An STM32-based environment logger that reads temperature and pressure from a BMP280 sensor every second, stores the data in an external EEPROM, and displays live readings on an SSD1306 OLED display.
+An STM32 bare-metal environment logger that periodically reads temperature and pressure from a BMP280 sensor, stores measurements in an external AT24C256 EEPROM, displays live readings on an SSD1306 OLED, and provides a UART command-line interface for monitoring and controlling the logger.
 
 ## Hardware Used
 
@@ -11,15 +11,20 @@ An STM32-based environment logger that reads temperature and pressure from a BMP
 
 ## Features
 
-- 1-second timer interrupt
+- Bare-metal firmware (No HAL)
 - BMP280 temperature measurement
 - BMP280 pressure measurement
-- EEPROM data logging
 - SSD1306 OLED display
+- External EEPROM data logging
+- UART command-line interface
+- Interrupt-driven UART reception using a ring buffer
+- Fixed-point sensor data storage
+- 5-second timer interrupt
+- Modular layered software architecture
 - Custom I2C driver
-- Custom timer driver
 - Custom EEPROM driver
-- Custom BMP280 sensor interface
+- Custom BMP280 driver
+- Custom SSD1306 driver
 
 ## Build Environment
 
@@ -28,6 +33,28 @@ An STM32-based environment logger that reads temperature and pressure from a BMP
 - Bare-metal drivers (No HAL)
 
 ## Software Architecture
+Application
+|
+|-- Environment Logger
+|-- UART Command Console
+
+BSP
+|-- BMP280
+|-- EEPROM
+|-- SSD1306
+|-- Fonts
+|-- Logger
+
+Drivers
+|-- RCC
+|-- GPIO
+|-- USART
+|-- Ring Buffer
+|-- I2C
+|-- TIM
+|-- NVIC
+|-- SysTick
+|-- Delay
 
 ### Drivers
 
@@ -52,36 +79,72 @@ An STM32-based environment logger that reads temperature and pressure from a BMP
 ### Application
 
 - Environment Logger
+- UART Command Console
+
+## UART Commands
+
+| Command  | Description                           |
+|----------|---------------------------------------|
+| help     | Display available commands            |
+| live     | Show current temperature and pressure |
+| log on   | Enable periodic logging               |
+| log off  | Disable periodic logging              |
+| count    | Display total logged records          |
+| read n   | Read the nth EEPROM record            |
+| clear    | Erase all logged records              |
 
 ## Current Operation
 
-1. Timer generates an interrupt every second.
-2. BMP280 temperature and pressure are read.
-3. Measurements are stored in EEPROM.
-4. Latest values are displayed on the OLED.
+1. Timer generates a 5-second interrupt.
+2. BMP280 temperature and pressure are sampled.
+3. Logging is performed if logging is enabled.
+4. Latest readings are displayed on the OLED.
+5. UART commands can be used to:
+   - View live readings
+   - Enable/disable logging
+   - Read stored records
+   - Display record count
+   - Erase logged data
 
 ## Future Improvements
 
-- UART command parser
-- EEPROM log retrieval over UART
-- EEPROM erase command
+## Future Improvements
+
 - Circular buffer logging
+- RTC timestamp support
+- SD card logging
+- CSV export over UART
+- Non-blocking EEPROM erase
+- Configuration commands
 
 Project Status
 --------------
-Current Version: v1.0
+Current Version: v2.0
 
-Implemented:
- BMP280 Driver
- SSD1306 Driver
- EEPROM Driver
- Timer Interrupt Logging
- Environment Data Logging
+Implemented
 
-In Progress:
- UART Command Parser
- Log Retrieval Commands
- Circular Buffer Management
+- BMP280 Driver
+- SSD1306 Driver
+- EEPROM Driver
+- UART Driver
+- Ring Buffer
+- UART Command Console
+- Timer Interrupt Logging
+- EEPROM Data Logging
+- Fixed-point UART output
+
+## Skills Demonstrated
+
+- Embedded C
+- Bare-metal STM32 Programming
+- CMSIS Register Programming
+- Interrupt Handling
+- Ring Buffer Implementation
+- UART Communication
+- I2C Communication
+- EEPROM Memory Management
+- Sensor Driver Development
+- Modular Firmware Architecture
 
 ## Demo
 
@@ -92,6 +155,10 @@ In Progress:
 ### OLED Output
 
 ![OLED Display](images/oled_display.jpeg)
+
+### UART Command Console
+
+![UART COMMAND TERMINAL](images/uart_command_terminal.jpeg)
 
 ## Author
 

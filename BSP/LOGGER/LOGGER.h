@@ -29,5 +29,12 @@ uint8_t logger_init(void);
 uint8_t logger_save_record(int16_t temp, uint32_t pressure);
 uint8_t logger_read_record(uint16_t index, log_record_t *record);
 uint16_t logger_get_record_count(void);
+uint8_t logger_send_count(void);
+uint8_t logger_send_log(uint16_t index);
+void logger_enable(void);
+void logger_disable(void);
+uint8_t logger_is_enabled(void);
+uint8_t logger_clear(void);
+
 
 #endif /* LOGGER_LOGGER_H_ */

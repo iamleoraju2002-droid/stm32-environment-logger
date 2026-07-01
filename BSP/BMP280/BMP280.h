@@ -63,6 +63,10 @@ float bmp280_get_temperature(void);
 int32_t bmp280_read_raw_pressure(void);
 float bmp280_get_pressure(void);
 
+
+uint8_t bmp280_send_temp(int16_t *temp);
+uint8_t bmp280_send_pressure(uint32_t *pressure);
+
 #endif
 
 
